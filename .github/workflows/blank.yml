@@ -1,5 +1,4 @@
 name: Deploy to DigitalOcean
-
 on:
   push:
     branches:
@@ -11,7 +10,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    
+
     - name: Install dependencies
       run: |
         sudo apt-get update
