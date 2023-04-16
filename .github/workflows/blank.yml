@@ -21,7 +21,7 @@ jobs:
           chmod 700 ~/.ssh
           ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
-          scp -r * root@$SSH_HOST:/var/www/html
+          scp -r * eustaciasukarto@$SSH_HOST:/var/www/html
     env:
       SSH_PRIVATE_KEY: ${{secrets.SSH_KEY}}
       SERVER_IP: ${{secrets.SSH_HOST}}
