@@ -1,27 +1,28 @@
-name: Continuous Integration
-
+name: Build and Deploy
 on:
-  pull_request:
+  push:
     branches:
-      - main
-
+      - master
 jobs:
-  merge_pull_request:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
     steps:
-      - name: Checkout main branch
-        uses: actions/checkout@v2
-
-      - name: Use Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: '14.x'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Test application
-        run: npm test
-
-      - name: Build application
-        run: npm run build
+      - uses: actions/checkout@master
+      - name: Deploy
+        run: |
+          which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y  )
+          which rsync || ( apt-get update -y && apt-get install rsync -y )
+          eval $(ssh-agent -s)
+          ssh-add <(echo "$SSH_KEY" )
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+          scp -r * root@$SSH_HOST:/var/www/html
+    env:
+      SSH_PRIVATE_KEY: ${{secrets.SSH_KEY}}
+      SERVER_IP: ${{secrets.SSH_HOST}}
+      CI: false
