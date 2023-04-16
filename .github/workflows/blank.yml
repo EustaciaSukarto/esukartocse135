@@ -28,4 +28,4 @@ jobs:
 
     - name: Deploy code
       run: |
-        rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" ./ eustaciasukarto@${{ secrets.SSH_HOST }}:/var/www/html
+        rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" ./ eustaciasukarto@${{ secrets.SSH_HOST }}:/var/www/esukartocse135.com/public_html
