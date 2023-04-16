@@ -11,11 +11,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Create SSH directory
-        run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-
+    
     - name: Install dependencies
       run: |
         sudo apt-get update
