@@ -1,34 +1,27 @@
-name: Build and Deploy
+name: Deploy to DigitalOcean
+
 on:
-  pull_request:
+  push:
     branches:
       - main
+
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [12.x]
+
     steps:
-      - uses: actions/checkout@main
-      - name: Create SSH directory
+    - uses: actions/checkout@v2
+    - name: Create SSH directory
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-      - name: Install SSH client and rsync
-        run: |
-          which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y  )
-          which rsync || ( apt-get update -y && apt-get install rsync -y )
-      - name: Set permissions for known_hosts
-        run: chmod 644 ~/.ssh/known_hosts
-      - name: Add host to known_hosts
-        run: ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
-      - name: Deploy
-        run: |
-          eval $(ssh-agent -s)
-          ssh-add <(echo "$SSH_PRIVATE_KEY")
-          scp -r * eustaciasukarto@$SSH_HOST:/var/www/html
-    env:
-      SSH_PRIVATE_KEY: ${{secrets.SSH_KEY}}
-      SSH_HOST: ${{secrets.SERVER_IP}}
-      CI: false
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ssh rsync
+
+    - name: Deploy
+      run: |
+        ssh-keyscan 146.190.65.27 >> ~/.ssh/known_hosts
+        rsync -avz --delete ./ eustaciasukarto@146.190.65.27:/var/www/html/
